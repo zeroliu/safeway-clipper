@@ -56,7 +56,7 @@ def safeway_login(driver: webdriver, username, password) -> None:
 
     if login_button.text == 'Sign In / Up':
         logger.error('Login failed.')
-        driver.close()
+        driver.quit()
         exit(-1)
     else:
         logger.info('Login success.')
@@ -72,18 +72,17 @@ def safeway_clip_coupons(driver: webdriver) -> None:
 
     scroll_count = 12
     for i in range(scroll_count):
-        load_more_btn = driver.find_element_by_xpath('//button[text()="Load more"]')
+        load_more_btn = driver.find_element_by_xpath('//button[@class="btn load-more"]')
         load_more_btn.click()
         time.sleep(1)
 
     try:
-        add_buttons = driver.find_elements_by_xpath('//button[text()="Clip Coupon"]')
+        add_buttons = driver.find_elements_by_xpath('//button[@class="btn grid-coupon-btn btn-default"]')
         logger.info(f'Found {len(add_buttons)} coupons')
     except:
         logger.exception('No coupons found')
-        driver.close()
+        driver.quit()
         exit(0)
-        return
 
     coupons_clipped = 0
     for btn in add_buttons:
@@ -93,6 +92,10 @@ def safeway_clip_coupons(driver: webdriver) -> None:
             time.sleep(0.5)
 
     logger.info(f'clipped {coupons_clipped} coupons')
+
+
+def safeway_get_coupons_details(driver: webdriver) -> None:
+    driver.find_element_by_xpath('//a[@class="grid-coupon-details-link"]')
 
 
 @click.command()
@@ -111,7 +114,7 @@ def main(
     d = get_web_driver(browser, driver, headless)
     safeway_login(d, username, password)
     safeway_clip_coupons(d)
-    d.close()
+    d.quit()
 
 
 if __name__ == '__main__':
