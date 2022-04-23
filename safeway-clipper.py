@@ -4,21 +4,28 @@ import time
 import click
 from loguru import logger
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.service import Service
+from webdriver_manager.firefox import GeckoDriverManager
 
 
 # Firefox Web Driver: https://github.com/mozilla/geckodriver/releases
-def get_firefox_web_driver(driver: str, headless: bool) -> webdriver:
+from selenium.common.exceptions import NoSuchElementException
+
+
+def get_firefox_web_driver(headless: bool) -> webdriver:
     if headless:
         options = webdriver.FirefoxOptions()
         options.add_argument('-headless')
         d = webdriver.Firefox(
-            executable_path=driver,
+            service=Service(GeckoDriverManager().install()),
             options=options
         )
+
         return d
     else:
         d = webdriver.Firefox(
-            executable_path=driver
+            service=Service(GeckoDriverManager().install()),
         )
         d.set_window_size(1440, 900)
         return d
@@ -26,9 +33,9 @@ def get_firefox_web_driver(driver: str, headless: bool) -> webdriver:
 
 # Chrome Web Driver: https://chromedriver.chromium.org
 # Edge Web Driver: https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver
-def get_web_driver(browser: str, driver: str, headless: bool) -> webdriver:
+def get_web_driver(browser: str, headless: bool) -> webdriver:
     if browser.lower() == 'firefox':
-        return get_firefox_web_driver(driver, headless)
+        return get_firefox_web_driver(headless)
     else:
         logger.error(f'{browser} browser not supported')
         exit(-1)
@@ -42,24 +49,23 @@ def safeway_login(driver: webdriver, username, password) -> None:
     time.sleep(2)
 
     # enter login credentials
-    driver.find_element_by_id('label-email').send_keys(username)
-    driver.find_element_by_id('label-password').send_keys(password)
+    driver.find_element(by=By.ID, value='label-email').send_keys(username)
+    driver.find_element(by=By.ID, value='label-password').send_keys(password)
 
     # login
-    driver.find_element_by_id('btnSignIn').click()
+    driver.find_element(by=By.ID, value='btnSignIn').click()
 
     time.sleep(5)
 
     # verify login by checking text in 'sign-in-profile-text' button
     logger.info(f'Verifying login status ...')
-    login_button = driver.find_element_by_class_name('menu-nav__profile-button-sign-in-up')
-
-    if login_button.text == 'Sign In / Up':
+    try:
+        driver.find_element(by=By.CLASS_NAME, value='menu-nav__profile-button-sign-in-up')
+        logger.info('Login success.')
+    except NoSuchElementException:
         logger.error('Login failed.')
         driver.quit()
         exit(-1)
-    else:
-        logger.info('Login success.')
 
 
 def safeway_clip_coupons(driver: webdriver) -> None:
@@ -70,16 +76,19 @@ def safeway_clip_coupons(driver: webdriver) -> None:
 
     time.sleep(5)
 
-    scroll_count = 12
+    scroll_count = 24
     for i in range(scroll_count):
-        load_more_btn = driver.find_element_by_xpath('//button[@class="btn load-more"]')
+        try:
+            load_more_btn = driver.find_element(by=By.XPATH, value='//button[@class="btn load-more"]')
+        except NoSuchElementException:
+            break
         load_more_btn.click()
         time.sleep(1)
 
     try:
-        add_buttons = driver.find_elements_by_xpath('//button[@class="btn grid-coupon-btn btn-default"]')
+        add_buttons = driver.find_elements(by=By.XPATH, value='//button[@class="btn grid-coupon-btn btn-default"]')
         logger.info(f'Found {len(add_buttons)} coupons')
-    except:
+    except NoSuchElementException:
         logger.exception('No coupons found')
         driver.quit()
         exit(0)
@@ -95,23 +104,21 @@ def safeway_clip_coupons(driver: webdriver) -> None:
 
 
 def safeway_get_coupons_details(driver: webdriver) -> None:
-    driver.find_element_by_xpath('//a[@class="grid-coupon-details-link"]')
+    driver.find_element(by=By.XPATH, value='//a[@class="grid-coupon-details-link"]')
 
 
 @click.command()
 @click.option('-b', '--browser', default='firefox', help='Browser')
-@click.option('-d', '--driver', default='firefox-driver.exe', help='Web driver binary')
 @click.option('--headless/--no-headless', default=True, help='Headless mode')
 @click.option('-u', '--username', required=True, help='Safeway username')
 @click.option('-p', '--password', required=True, help='Safeway password')
 def main(
         browser: str,
-        driver: str,
         headless: bool,
         username: str,
         password: str
 ):
-    d = get_web_driver(browser, driver, headless)
+    d = get_web_driver(browser, headless)
     safeway_login(d, username, password)
     safeway_clip_coupons(d)
     d.quit()
