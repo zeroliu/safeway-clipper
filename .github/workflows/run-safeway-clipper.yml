@@ -1,0 +1,25 @@
+name: Run Script
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: '0 9 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: pip install -r ./requirements.txt
+
+      - name: Run Safeway Coupons Clipper
+        run: python ./safeway-clipper.py -u ${{ secrets.SAFEWAY_LOGIN_EMAIL }} -p ${{ secrets.SAFEWAY_LOGIN_PASSWORD }}

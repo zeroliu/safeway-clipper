@@ -4,15 +4,13 @@ import time
 import click
 from loguru import logger
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
 
 
 # Firefox Web Driver: https://github.com/mozilla/geckodriver/releases
-from selenium.common.exceptions import NoSuchElementException
-
-
 def get_firefox_web_driver(headless: bool) -> webdriver:
     if headless:
         options = webdriver.FirefoxOptions()
