@@ -2,7 +2,7 @@ name: Run Safeway Coupons Clipper
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   schedule:
     - cron: '0 9 * * *'
 
