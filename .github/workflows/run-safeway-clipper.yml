@@ -7,7 +7,7 @@ on:
     - cron: '0 9 * * *'
 
 jobs:
-  build:
+  clipper:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,3 +23,5 @@ jobs:
 
       - name: Run Safeway Coupons Clipper
         run: python ./safeway-clipper.py -u ${{ secrets.SAFEWAY_LOGIN_EMAIL }} -p ${{ secrets.SAFEWAY_LOGIN_PASSWORD }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
