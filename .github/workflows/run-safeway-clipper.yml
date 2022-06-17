@@ -1,4 +1,4 @@
-name: Run Script
+name: Run Safeway Coupons Clipper
 
 on:
   push:
