@@ -3,6 +3,8 @@ name: Run Safeway Coupons Clipper
 on:
   push:
     branches: [main]
+    paths:
+      - '**/*.py'
   schedule:
     - cron: '0 6 * * *'
 
