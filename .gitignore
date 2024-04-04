@@ -1,2 +1,10 @@
+# This file tells Git which files shouldn't be added to source control
+
 .idea
-.venv
+dist
+node_modules
+apify_storage
+crawlee_storage
+storage
+user-data
+.env
