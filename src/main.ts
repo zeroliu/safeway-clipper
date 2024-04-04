@@ -10,8 +10,8 @@ const crawler = new PlaywrightCrawler({
     userDataDir: !isProduction ? './user-data' : undefined
   },
   requestHandler: router,
-  maxRequestsPerCrawl: 10000
-  // maxRequestRetries: 0,
+  maxRequestsPerCrawl: 10000,
+  maxRequestRetries: 1
   // headless: true,
   // maxConcurrency: 1,
   // preNavigationHooks: [
