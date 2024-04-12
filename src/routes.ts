@@ -4,7 +4,7 @@ import { SIGN_IN_URL } from './constants.js'
 
 export const router = createPlaywrightRouter()
 
-router.addDefaultHandler(async ({ page, log, enqueueLinks }) => {
+router.addDefaultHandler(async ({ page, log }) => {
   Promise.any([
     page.waitForSelector('//div[@class="coupon-grid-offers"]', { timeout: 10000 }),
     page.waitForURL(SIGN_IN_URL, { timeout: 10000 })
