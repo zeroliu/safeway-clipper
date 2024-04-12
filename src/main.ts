@@ -6,14 +6,14 @@ import { COUPONS_URL, isProduction } from './constants.js'
 const startUrls = [COUPONS_URL]
 
 const crawler = new PlaywrightCrawler({
+  headless: false,
   launchContext: {
     userDataDir: !isProduction ? './user-data' : undefined
   },
   requestHandler: router,
   maxRequestsPerCrawl: 10000,
-  maxRequestRetries: 1
-  // headless: true,
-  // maxConcurrency: 1,
+  maxRequestRetries: 0,
+  maxConcurrency: 1
   // preNavigationHooks: [
   //   async ({ request, log }, _options) => {
   //     log.info(`Navigating to ${request.url}`)
@@ -24,7 +24,8 @@ const crawler = new PlaywrightCrawler({
 try {
   await crawler.run(startUrls)
 } finally {
-  if (Dataset.length > 0) {
+  const data = await Dataset.getData()
+  if (data.total > 0) {
     await Dataset.exportToCSV('coupons')
   }
 }

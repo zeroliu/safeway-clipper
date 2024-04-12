@@ -4,7 +4,7 @@ import { SIGN_IN_URL } from './constants.js'
 
 export const router = createPlaywrightRouter()
 
-router.addDefaultHandler(async ({ page, enqueueLinks, log }) => {
+router.addDefaultHandler(async ({ page, log, enqueueLinks }) => {
   Promise.any([
     page.waitForSelector('//div[@class="coupon-grid-offers"]', { timeout: 10000 }),
     page.waitForURL(SIGN_IN_URL, { timeout: 10000 })
@@ -22,16 +22,43 @@ router.addDefaultHandler(async ({ page, enqueueLinks, log }) => {
 
   await page.waitForSelector('//div[@class="coupon-grid-offers"]', { timeout: 10000 })
 
+  // load all coupons
   let loadMoreButton = await page.$('//button[@class="btn load-more"]')
   while (loadMoreButton) {
     await loadMoreButton.click()
+    await page.waitForTimeout(1000)
     loadMoreButton = await page.$('//button[@class="btn load-more"]')
   }
 
-  await enqueueLinks({
-    globs: ['https://www.safeway.com/foru/offer-details.*.*.*.html'],
-    label: 'offer-details'
-  })
+  let newCouponClipped = 0
+  try {
+    // clip all coupons
+    const clipButtons = await page.$$('button:has-text(" Clip Coupon ")')
+    for (const clipButton of clipButtons) {
+      await clipButton.click()
+      newCouponClipped++
+
+      await page.waitForTimeout(1000)
+
+      const errorModal = await page.$('//*[@id="errorModal"]//button[@class="create-modal-close-icon modal-close"]')
+
+      if (errorModal?.isVisible()) {
+        await errorModal.click()
+        await page.waitForTimeout(100)
+      }
+    }
+  } catch (e) {
+    log.error('Error clipping coupons')
+  } finally {
+    log.info(`${newCouponClipped} new coupons clipped.`)
+  }
+  /**
+   * Clip on offer details page
+   */
+  // await enqueueLinks({
+  //   globs: ['https://www.safeway.com/foru/offer-details.*.*.*.html'],
+  //   label: 'offer-details'
+  // })
 })
 
 router.addHandler('offer-details', async ({ request, page, pushData, log }) => {
