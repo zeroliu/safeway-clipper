@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Install Dependencies
         run: npm install
@@ -30,6 +30,5 @@ jobs:
       - name: Run Safeway Coupons Clipper
         run: npm run start:prod
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           SAFEWAY_USERNAME: ${{ secrets.SAFEWAY_LOGIN_EMAIL }}
           SAFEWAY_PASSWORD: ${{ secrets.SAFEWAY_LOGIN_PASSWORD }}
