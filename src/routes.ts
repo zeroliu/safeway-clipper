@@ -25,7 +25,7 @@ router.addDefaultHandler(async ({ page, log }) => {
   // load all coupons
   let loadMoreButton = await page.$('//button[@class="btn load-more"]')
   while (loadMoreButton) {
-    await loadMoreButton.click({ timeout: 500 })
+    await loadMoreButton.click({ timeout: 500, delay: 500 })
     await page.waitForTimeout(500)
     loadMoreButton = await page.$('//button[@class="btn load-more"]')
   }
