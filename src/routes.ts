@@ -16,9 +16,9 @@ router.addDefaultHandler(async ({ page, log }) => {
     log.info('Redirected to sign-in page, signing in ...')
     await page.fill('input[name="userId"]', env.SAFEWAY_USERNAME)
     await page.fill('input[name="inputPassword"]', env.SAFEWAY_PASSWORD)
-    await page.click('//input[@id="btnSignIn"]')
+    await page.click('//input[@id="btnSignIn"]', { delay: 500 })
     await page.waitForTimeout(1000)
-    await page.waitForURL(COUPONS_URL)
+    await page.waitForURL(url => url.toString().startsWith(COUPONS_URL))
   } else {
     log.info('Already signed in, continuing ...')
   }
