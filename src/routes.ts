@@ -21,7 +21,7 @@ router.addDefaultHandler(async ({ page, log }) => {
     log.info('Already signed in, continuing ...')
   }
 
-  await page.waitForSelector('//div[@class="coupon-grid-offers"]', { timeout: 10000 })
+  await page.waitForSelector('//div[@class="coupon-grid-offers"]', { timeout: 20000 })
 
   // clip all new coupons
   log.info('Loading all coupons ...')
@@ -33,6 +33,12 @@ router.addDefaultHandler(async ({ page, log }) => {
   }
 
   const clipButtons = await page.$$('button:has-text(" Clip Coupon ")')
+
+  if (clipButtons.length === 0) {
+    log.info('Great! All coupons has been clipped.')
+    return
+  }
+
   log.info(`Found ${clipButtons.length} new coupons, clipping ...`)
 
   let clipped = 0
