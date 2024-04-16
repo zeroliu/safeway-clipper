@@ -26,7 +26,7 @@ router.addDefaultHandler(async ({ page, log }) => {
   // clip all new coupons
   let loadMoreButton = await page.$('//button[@class="btn load-more"]')
   while (loadMoreButton) {
-    await loadMoreButton.click({ timeout: 500, delay: 500 })
+    await loadMoreButton.click({ timeout: 5000 })
     await page.waitForTimeout(500)
     loadMoreButton = await page.$('//button[@class="btn load-more"]')
   }
@@ -35,7 +35,7 @@ router.addDefaultHandler(async ({ page, log }) => {
   const clipButtons = await page.$$('button:has-text(" Clip Coupon ")')
   for (const clipButton of clipButtons) {
     try {
-      await clipButton.click({ timeout: 500, delay: 500 })
+      await clipButton.click({ timeout: 1000 })
 
       newCouponClipped++
 
