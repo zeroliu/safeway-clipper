@@ -35,7 +35,7 @@ router.addDefaultHandler(async ({ page, log }) => {
   const clipButtons = await page.$$('button:has-text(" Clip Coupon ")')
   for (const clipButton of clipButtons) {
     try {
-      await clipButton.click({ timeout: 500 })
+      await clipButton.click({ timeout: 500, delay: 500 })
 
       newCouponClipped++
 
@@ -44,7 +44,7 @@ router.addDefaultHandler(async ({ page, log }) => {
       const errorModal = await page.$('//*[@id="errorModal"]//button[@class="create-modal-close-icon modal-close"]')
       const isErrorModalVisible = errorModal?.isVisible()
       if (errorModal && isErrorModalVisible) {
-        await errorModal.click({ timeout: 500 })
+        await errorModal.click({ timeout: 100 })
         await page.waitForTimeout(10)
       }
     } catch (e) {

@@ -12,9 +12,9 @@ const crawler = new PlaywrightCrawler({
   },
   requestHandler: router,
   requestHandlerTimeoutSecs: 3600,
-  maxRequestsPerCrawl: 10000,
   maxRequestRetries: 2,
-  maxConcurrency: 1
+  maxRequestsPerCrawl: 10000,
+  maxConcurrency: 10
 })
 
 await crawler.run(startUrls)
