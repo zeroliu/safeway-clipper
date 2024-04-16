@@ -1,7 +1,7 @@
 import { createPlaywrightRouter } from 'crawlee'
 
 import { env } from './env.js'
-import { SIGN_IN_URL } from './constants.js'
+import { COUPONS_URL, SIGN_IN_URL } from './constants.js'
 
 export const router = createPlaywrightRouter()
 
@@ -17,11 +17,14 @@ router.addDefaultHandler(async ({ page, log }) => {
     await page.fill('input[name="userId"]', env.SAFEWAY_USERNAME)
     await page.fill('input[name="inputPassword"]', env.SAFEWAY_PASSWORD)
     await page.click('//input[@id="btnSignIn"]')
+    await page.waitForTimeout(1000)
+    await page.waitForURL(COUPONS_URL)
   } else {
     log.info('Already signed in, continuing ...')
   }
 
-  await page.waitForSelector('//div[@class="coupon-grid-offers"]', { timeout: 20000 })
+  await page.waitForTimeout(1000)
+  await page.waitForSelector('//div[@class="coupon-grid-offers"]', { timeout: 10000 })
 
   // clip all new coupons
   log.info('Loading all coupons ...')
