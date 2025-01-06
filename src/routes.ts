@@ -14,11 +14,24 @@ router.addDefaultHandler(async ({ page, log }) => {
   // if redirected to sign-in page, sign in
   if (page.url() === SIGN_IN_URL) {
     log.info('Redirected to sign-in page, signing in ...')
-    await page.fill('input[name="userId"]', env.SAFEWAY_USERNAME)
-    await page.fill('input[name="inputPassword"]', env.SAFEWAY_PASSWORD)
-    await page.click('//input[@id="btnSignIn"]', { delay: 500 })
-    await page.waitForTimeout(1000)
-    await page.waitForURL(url => url.toString().startsWith(COUPONS_URL))
+
+    // Wait for the email/username input field to be visible
+    await page.waitForSelector('#enterUsername', { timeout: 10000 })
+
+    // Fill in credentials
+    await page.fill('#enterUsername', env.SAFEWAY_USERNAME)
+    const signInWithPasswordButton = await page.$('button:has-text(" Sign in with password ")')
+    await signInWithPasswordButton?.click()
+
+    await page.waitForSelector('#password', { timeout: 10000 })
+    await page.fill('#password', env.SAFEWAY_PASSWORD)
+
+    // Click the sign in button - using a more reliable selector
+    await page.click('button[type="submit"]', { delay: 500 })
+
+    // Wait longer for authentication and redirect
+    await page.waitForTimeout(3000)
+    await page.waitForURL(url => url.toString().startsWith(COUPONS_URL), { timeout: 20000 })
   } else {
     log.info('Already signed in, continuing ...')
   }

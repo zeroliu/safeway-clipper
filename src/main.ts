@@ -6,7 +6,7 @@ import { COUPONS_URL, isProduction } from './constants.js'
 const startUrls = [COUPONS_URL]
 
 const crawler = new PlaywrightCrawler({
-  headless: true,
+  headless: isProduction,
   launchContext: {
     userDataDir: !isProduction ? './user-data' : undefined
   },
