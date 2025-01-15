@@ -31,6 +31,6 @@ jobs:
       - name: Run Safeway Coupons Clipper
         run: npm run start:prod
         env:
-          SAFEWAY_USERNAME: ${{ secrets.SAFEWAY_EMAIL }}
+          SAFEWAY_USERNAME: ${{ secrets.SAFEWAY_USERNAME }}
           SAFEWAY_PASSWORD: ${{ secrets.SAFEWAY_PASSWORD }}
           CRAWLEE_VERBOSE_LOG: true
